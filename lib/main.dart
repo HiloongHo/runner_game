@@ -105,7 +105,10 @@ class Ground extends RectangleComponent with HasGameRef<RunnerGame> {
 }
 
 // ==================== 玩家 ====================
-class Player extends RectangleComponent with CollisionCallbacks, HasGameRef<RunnerGame> {
+enum PlayerState { run, jump, slide, death }
+
+class Player extends SpriteAnimationGroupComponent<PlayerState>
+    with CollisionCallbacks, HasGameRef<RunnerGame> {
   final double gravity = 980;
   final double jumpSpeed = -480;
   double velocityY = 0;
@@ -114,14 +117,40 @@ class Player extends RectangleComponent with CollisionCallbacks, HasGameRef<Runn
   late double groundY;
 
   Player() : super(
-    size: Vector2(60, 80),
-    paint: Paint()..color = Colors.orange,
+    size: Vector2(80, 100),        // 根据你的Temple Run图片大小微调（建议80x100左右）
+    anchor: Anchor.bottomLeft,
   );
 
   @override
-  void onLoad() {
-    groundY = gameRef.size.y - 80 - size.y;
+  Future<void> onLoad() async {
+    groundY = gameRef.size.y - 80;
     position = Vector2(100, groundY);
+
+    // 加载所有动画（10帧每秒0.05秒一帧）
+    final runFrames = await Future.wait(
+      List.generate(10, (i) => Sprite.load('run_${i + 1}.png')),
+    );
+    final jumpFrames = await Future.wait(
+      List.generate(10, (i) => Sprite.load('jump_${i + 1}.png')),
+    );
+    final slideFrames = await Future.wait(
+      List.generate(10, (i) => Sprite.load('slide_${i + 1}.png')),
+    );
+    final deathFrames = await Future.wait(
+      List.generate(10, (i) => Sprite.load('death_${i + 1}.png')),
+    );
+
+    animations = {
+      PlayerState.run: SpriteAnimation.spriteList(runFrames, stepTime: 0.05, loop: true),
+      PlayerState.jump: SpriteAnimation.spriteList(jumpFrames, stepTime: 0.08, loop: false),
+      PlayerState.slide: SpriteAnimation.spriteList(slideFrames, stepTime: 0.08, loop: true),
+      PlayerState.death: SpriteAnimation.spriteList(deathFrames, stepTime: 0.1, loop: false),
+    };
+
+    current = PlayerState.run;   // 默认播放跑步动画
+
+    // 碰撞盒（根据图片大小调整）
+    add(RectangleHitbox());
   }
 
   void jump() {
@@ -129,6 +158,7 @@ class Player extends RectangleComponent with CollisionCallbacks, HasGameRef<Runn
       velocityY = jumpSpeed;
       jumpCount++;
       isOnGround = false;
+      current = PlayerState.jump;   // 切换到跳跃动画
     }
   }
 
@@ -137,24 +167,30 @@ class Player extends RectangleComponent with CollisionCallbacks, HasGameRef<Runn
     jumpCount = 0;
     isOnGround = true;
     position.y = groundY;
+    current = PlayerState.run;
   }
 
   @override
   void update(double dt) {
+    super.update(dt);
+
     velocityY += gravity * dt;
     position.y += velocityY * dt;
 
+    // 落地检测
     if (position.y >= groundY) {
       position.y = groundY;
       velocityY = 0;
       isOnGround = true;
       jumpCount = 0;
+      current = PlayerState.run;   // 落地后切回跑步动画
     }
   }
 
   @override
   void onCollision(Set<Vector2> intersectionPoints, PositionComponent other) {
     if (other is Obstacle) {
+      current = PlayerState.death;
       gameRef.gameOver();
     }
   }
