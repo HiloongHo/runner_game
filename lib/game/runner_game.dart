@@ -13,7 +13,7 @@ import 'components/obstacle.dart';
 import 'components/obstacle_spawner.dart';
 import 'components/game_over_text.dart';
 
-class RunnerGame extends FlameGame with TapDetector, HasCollisionDetection {
+class RunnerGame extends FlameGame with TapDetector, HasCollisionDetection, HasKeyboardHandlerComponents {
   late Player player;
   late TextComponent scoreText;
   int score = 0;
@@ -62,7 +62,7 @@ class RunnerGame extends FlameGame with TapDetector, HasCollisionDetection {
 
   void gameOver() {
     isGameOver = true;
-    AudioManager.stopBgm();        // ← 游戏结束停止音乐
+    AudioManager.stopBgm(); // ← 游戏结束停止音乐
     AudioManager.playHit();
     add(GameOverText());
   }
@@ -78,7 +78,7 @@ class RunnerGame extends FlameGame with TapDetector, HasCollisionDetection {
 
   @override
   void onRemove() {
-    AudioManager.stopBgm();        // 退出游戏时停止音乐
+    AudioManager.stopBgm(); // 退出游戏时停止音乐
     super.onRemove();
   }
 }

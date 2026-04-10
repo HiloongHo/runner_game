@@ -7,5 +7,5 @@ import 'game/runner_game.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight]);
-  runApp(GameWidget(game: RunnerGame()));
+  runApp(GameWidget(game: RunnerGame(), autofocus: true));
 }

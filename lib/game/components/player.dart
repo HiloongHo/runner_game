@@ -1,11 +1,12 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import 'package:flutter/services.dart';
 import '../audio/flame_audio.dart';
 import '../models/player_state.dart';
 import '../runner_game.dart';
 import 'obstacle.dart';
 
-class Player extends SpriteAnimationGroupComponent<PlayerState> with CollisionCallbacks, HasGameRef<RunnerGame> {
+class Player extends SpriteAnimationGroupComponent<PlayerState> with CollisionCallbacks, HasGameRef<RunnerGame>, KeyboardHandler {
   final double gravity = 980;
   final double jumpSpeed = -480;
   double velocityY = 0;
@@ -78,5 +79,18 @@ class Player extends SpriteAnimationGroupComponent<PlayerState> with CollisionCa
       current = PlayerState.death;
       gameRef.gameOver();
     }
+  }
+
+  @override
+  bool onKeyEvent(KeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+    // 只在按下（KeyDownEvent）时触发，避免重复调用
+    if (event is KeyDownEvent) {
+      // 支持“确认键”（Enter）和常用跳跃键（Space）
+      if (event.logicalKey == LogicalKeyboardKey.enter || event.logicalKey == LogicalKeyboardKey.select) {
+        jump(); // 调用你已有的跳跃方法
+        return true; // 已处理该事件
+      }
+    }
+    return false;
   }
 }
