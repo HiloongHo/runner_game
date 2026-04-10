@@ -1,0 +1,1 @@
+enum PlayerState { run, jump, slide, death }
