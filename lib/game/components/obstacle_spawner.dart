@@ -2,7 +2,7 @@ import 'package:flame/components.dart';
 import '../runner_game.dart';
 import 'obstacle.dart';
 
-class ObstacleSpawner extends Component with HasGameRef<RunnerGame> {
+class ObstacleSpawner extends Component with HasGameReference<RunnerGame> {
   double timer = 0;
   final double spawnInterval = 1.6;
 
@@ -11,7 +11,7 @@ class ObstacleSpawner extends Component with HasGameRef<RunnerGame> {
     timer += dt;
     if (timer > spawnInterval) {
       timer = 0;
-      gameRef.add(Obstacle());
+      game.add(Obstacle());
     }
   }
 }

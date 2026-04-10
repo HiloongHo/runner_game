@@ -3,11 +3,11 @@ import 'package:flame/text.dart';
 import 'package:flutter/material.dart';
 import '../runner_game.dart';
 
-class GameOverText extends Component with HasGameRef<RunnerGame> {
+class GameOverText extends Component with HasGameReference<RunnerGame> {
   @override
   void onLoad() {
     final text = TextComponent(
-      text: '游戏结束\n\n分数: ${gameRef.score}\n点击屏幕重新开始',
+      text: '游戏结束\n\n分数: ${game.score}\n点击屏幕重新开始',
       textRenderer: TextPaint(
         style: const TextStyle(
           color: Colors.white,
@@ -17,7 +17,7 @@ class GameOverText extends Component with HasGameRef<RunnerGame> {
       ),
       anchor: Anchor.center,
     );
-    text.position = gameRef.size / 2;
+    text.position = game.size / 2;
     add(text);
   }
 }

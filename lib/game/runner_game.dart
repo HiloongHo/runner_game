@@ -4,7 +4,6 @@ import 'package:flame/components.dart';
 import 'package:flame/input.dart';
 import 'package:flame/text.dart';
 import 'package:flutter/material.dart';
-
 import 'audio/flame_audio.dart';
 import 'components/background.dart';
 import 'components/ground.dart';
@@ -13,7 +12,7 @@ import 'components/obstacle.dart';
 import 'components/obstacle_spawner.dart';
 import 'components/game_over_text.dart';
 
-class RunnerGame extends FlameGame with TapDetector, HasCollisionDetection, HasKeyboardHandlerComponents {
+class RunnerGame extends FlameGame with HasCollisionDetection, HasKeyboardHandlerComponents, TapCallbacks {
   late Player player;
   late TextComponent scoreText;
   int score = 0;
@@ -47,12 +46,12 @@ class RunnerGame extends FlameGame with TapDetector, HasCollisionDetection, HasK
     if (!isGameOver) {
       score += (dt * 60).toInt();
       scoreText.text = '分数: $score';
-      speed = 250 + (score / 80); // 越跑越快
+      speed = 250 + (score / 80);
     }
   }
 
   @override
-  void onTapDown(TapDownInfo info) {
+  void onTapDown(TapDownEvent event) {
     if (!isGameOver) {
       player.jump();
     } else {
@@ -62,7 +61,7 @@ class RunnerGame extends FlameGame with TapDetector, HasCollisionDetection, HasK
 
   void gameOver() {
     isGameOver = true;
-    AudioManager.stopBgm(); // ← 游戏结束停止音乐
+    AudioManager.stopBgm();
     AudioManager.playHit();
     add(GameOverText());
   }
@@ -78,7 +77,7 @@ class RunnerGame extends FlameGame with TapDetector, HasCollisionDetection, HasK
 
   @override
   void onRemove() {
-    AudioManager.stopBgm(); // 退出游戏时停止音乐
+    AudioManager.stopBgm();
     super.onRemove();
   }
 }

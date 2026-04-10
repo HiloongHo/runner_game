@@ -6,7 +6,7 @@ import '../models/player_state.dart';
 import '../runner_game.dart';
 import 'obstacle.dart';
 
-class Player extends SpriteAnimationGroupComponent<PlayerState> with CollisionCallbacks, HasGameRef<RunnerGame>, KeyboardHandler {
+class Player extends SpriteAnimationGroupComponent<PlayerState> with CollisionCallbacks, HasGameReference<RunnerGame>, KeyboardHandler {
   final double gravity = 980;
   final double jumpSpeed = -480;
   double velocityY = 0;
@@ -18,7 +18,7 @@ class Player extends SpriteAnimationGroupComponent<PlayerState> with CollisionCa
 
   @override
   Future<void> onLoad() async {
-    groundY = gameRef.size.y - 80;
+    groundY = game.size.y - 80;
     position = Vector2(100, groundY);
 
     final runFrames = await Future.wait(List.generate(10, (i) => Sprite.load('run_${i + 1}.png')));
@@ -77,7 +77,7 @@ class Player extends SpriteAnimationGroupComponent<PlayerState> with CollisionCa
     super.onCollision(intersectionPoints, other);
     if (other is Obstacle) {
       current = PlayerState.death;
-      gameRef.gameOver();
+      game.gameOver();
     }
   }
 
