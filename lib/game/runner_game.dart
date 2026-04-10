@@ -5,6 +5,7 @@ import 'package:flame/input.dart';
 import 'package:flame/text.dart';
 import 'package:flutter/material.dart';
 
+import 'audio/flame_audio.dart';
 import 'components/background.dart';
 import 'components/ground.dart';
 import 'components/player.dart';
@@ -22,7 +23,8 @@ class RunnerGame extends FlameGame with TapDetector, HasCollisionDetection {
   @override
   Future<void> onLoad() async {
     super.onLoad();
-
+    await AudioManager.init();
+    AudioManager.playBgm();
     add(Background());
     add(Ground());
 
@@ -60,6 +62,8 @@ class RunnerGame extends FlameGame with TapDetector, HasCollisionDetection {
 
   void gameOver() {
     isGameOver = true;
+    AudioManager.stopBgm();        // ← 游戏结束停止音乐
+    AudioManager.playHit();
     add(GameOverText());
   }
 
@@ -69,5 +73,12 @@ class RunnerGame extends FlameGame with TapDetector, HasCollisionDetection {
     speed = 250;
     isGameOver = false;
     player.reset();
+    AudioManager.playBgm();
+  }
+
+  @override
+  void onRemove() {
+    AudioManager.stopBgm();        // 退出游戏时停止音乐
+    super.onRemove();
   }
 }

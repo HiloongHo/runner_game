@@ -1,5 +1,6 @@
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
+import '../audio/flame_audio.dart';
 import '../models/player_state.dart';
 import '../runner_game.dart';
 import 'obstacle.dart';
@@ -42,6 +43,7 @@ class Player extends SpriteAnimationGroupComponent<PlayerState> with CollisionCa
       jumpCount++;
       isOnGround = false;
       current = PlayerState.jump;
+      AudioManager.playJump();
     }
   }
 
